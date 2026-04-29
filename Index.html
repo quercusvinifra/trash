@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Lottery Planner">
+    <meta name="theme-color" content="#1a365d">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%232b6cb0' width='100' height='100' rx='20'/><text x='50' y='65' text-anchor='middle' fill='white' font-size='50' font-weight='bold'>$</text></svg>">
+    <title>NC Lottery Investment Planner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #2d3748 50%, #1a202c 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 16px;
+            line-height: 1.5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #f6e05e, #ed8936);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .card h2 {
+            color: #f6e05e;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #f6e05e;
+            box-shadow: 0 0 20px rgba(246,224,94,0.2);
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        @media (max-width: 600px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .result-item {
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            border-radius: 10px;
+        }
+        
+        .result-label {
+            font-size: 0.8rem;
+            color: #a0aec0;
+        }
+        
+        .result-value {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #68d391;
+        }
+        
+        .highlight {
+            color: #f6e05e;
+            font-size: 1.5rem;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #f6e05e, #ed8936);
+            color: #1a202c;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn:hover {
+            box-shadow: 0 10px 30px rgba(246,224,94,0.3);
+        }
+        
+        .expense-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+        
+        .expense-table td {
+            padding: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .expense-table td:last-child {
+            text-align: right;
+            font-weight: bold;
+            color: #68d391;
+        }
+        
+        .section-divider {
+            border-top: 2px solid rgba(246,224,94,0.3);
+            margin: 20px 0;
+            padding-top: 20px;
+        }
+        
+        .info-badge {
+            display: inline-block;
+            background: rgba(246,224,94,0.2);
+            color: #f6e05e;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏆 NC Lottery Investment Planner</h1>
+            <p class="subtitle">Mega Millions & Powerball • After-Tax Strategy • Perpetual Wealth</p>
+        </header>
+
+        <div class="card">
+            <h2>🎰 Lottery Jackpot Input</h2>
+            <div class="input-group">
+                <label>Enter Current Jackpot Amount (USD)</label>
+                <input type="number" id="jackpotAmount" placeholder="e.g., 500000000" value="500000000" step="1000000">
+            </div>
+            <button class="btn" onclick="calculateAll()">📊 Calculate Full Plan</button>
+        </div>
+
+        <div id="results" style="display:none;">
+            <!-- After-Tax Calculation -->
+            <div class="card">
+                <h2>💰 After Reduction & Taxes (×0.2276)</h2>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="result-label">Gross Jackpot</div>
+                        <div class="result-value" id="grossAmount">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">After Reduction & Taxes</div>
+                        <div class="result-value highlight" id="netAmount">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Lump Sum Reduction (60%)</div>
+                        <div class="result-value" id="lumpSum">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Federal & State Taxes (≈37%)</div>
+                        <div class="result-value" id="taxAmount">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Safe Withdrawal Amount -->
+            <div class="card">
+                <h2>🏦 Safe Annual Withdrawal (Inflation-Adjusted Perpetuity)</h2>
+                <p style="color: #a0aec0; margin-bottom: 12px;">Based on 3.5% safe withdrawal rate to preserve principal & keep pace with inflation forever</p>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="result-label">Total Investable Amount</div>
+                        <div class="result-value" id="investableAmount">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Safe Annual Withdrawal (3.5%)</div>
+                        <div class="result-value highlight" id="safeWithdrawal">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Safe Monthly Living</div>
+                        <div class="result-value" id="monthlyLiving">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Expected Annual Growth (7%)</div>
+                        <div class="result-value" id="annualGrowth">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investment Allocation -->
+            <div class="card">
+                <h2>📈 Investment Allocation Strategy</h2>
+                <div class="section-divider">
+                    <h3 style="color: #f6e05e;">Year 1: Security & Growth Focus</h3>
+                </div>
+                <table class="expense-table">
+                    <tr><td>🛡️ Low-Risk Bonds & Treasury (30%)</td><td id="bondsAlloc">-</td></tr>
+                    <tr><td>📊 S&P 500 Index Fund (25%)</td><td id="spAlloc">-</td></tr>
+                    <tr><td>🌍 International Markets ETF (15%)</td><td id="intlAlloc">-</td></tr>
+                    <tr><td>🏘️ Real Estate Investment Trusts (15%)</td><td id="reitAlloc">-</td></tr>
+                    <tr><td>💡 Private Equity/Startups (10%)</td><td id="startupAlloc">-</td></tr>
+                    <tr><td>💰 Cash Reserve/Money Market (5%)</td><td id="cashAlloc">-</td></tr>
+                </table>
+
+                <div class="section-divider">
+                    <h3 style="color: #f6e05e;">Year 2: Self-Directed Charity Allocation</h3>
+                </div>
+                <table class="expense-table">
+                    <tr><td>❤️ Self-Directed Charitable Trust (From Safe Withdrawal)</td><td id="charityAlloc">-</td></tr>
+                    <tr><td>📊 Charity Tax Deduction Value (≈30%)</td><td id="charityTaxDeduction">-</td></tr>
+                </table>
+            </div>
+
+            <!-- Real Estate & Startups Detail -->
+            <div class="card">
+                <h2>🏘️ Real Estate & Startup Investment Detail</h2>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="result-label">Real Estate Direct Investment</div>
+                        <div class="result-value" id="realEstateDirect">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">REITs (Diversified)</div>
+                        <div class="result-value" id="reitDetail">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Angel/Seed Startup Investments</div>
+                        <div class="result-value" id="angelInvest">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Venture Capital Funds</div>
+                        <div class="result-value" id="vcFunds">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insurance Costs (62yo Male) -->
+            <div class="card">
+                <h2>🛡️ Annual Insurance Costs (62 y/o Male, NC)</h2>
+                <table class="expense-table">
+                    <tr><td>🏥 Best US & International Health Insurance</td><td id="healthIns">-</td></tr>
+                    <tr><td>✈️ Global Travel Insurance (Premium)</td><td id="travelIns">-</td></tr>
+                    <tr><td>🚗 Auto Insurance (Full Coverage, Luxury)</td><td id="autoIns">-</td></tr>
+                    <tr><td>🎈 Umbrella Liability Insurance ($5M)</td><td id="umbrellaIns">-</td></tr>
+                    <tr style="font-weight: bold; color: #f6e05e;"><td>Total Insurance Costs</td><td id="totalIns">-</td></tr>
+                </table>
+            </div>
+
+            <!-- Professional Services & Expenses -->
+            <div class="card">
+                <h2>👔 Annual Professional & Other Expenses</h2>
+                <table class="expense-table">
+                    <tr><td>⚖️ Estate Planning Attorney</td><td id="legalFee">-</td></tr>
+                    <tr><td>📊 CPA/Tax Accountant</td><td id="cpaFee">-</td></tr>
+                    <tr><td>📈 Financial Advisor (Fee-Only, 0.5% AUM)</td><td id="advisorFee">-</td></tr>
+                    <tr><td>🏦 Trust Administration</td><td id="trustFee">-</td></tr>
+                    <tr><td>🔒 Cybersecurity/Identity Protection</td><td id="cyberFee">-</td></tr>
+                    <tr><td>📋 Miscellaneous (Licenses, Filing, etc.)</td><td id="miscFee">-</td></tr>
+                    <tr style="font-weight: bold; color: #f6e05e;"><td>Total Professional Expenses</td><td id="totalProfessional">-</td></tr>
+                </table>
+            </div>
+
+            <!-- Final Living Amount -->
+            <div class="card" style="background: rgba(246,224,94,0.1); border: 2px solid rgba(246,224,94,0.3);">
+                <h2>💵 Amount Left for Living Expenses</h2>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="result-label">Safe Annual Withdrawal</div>
+                        <div class="result-value" id="finalWithdrawal">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Minus All Annual Expenses</div>
+                        <div class="result-value" id="totalAllExpenses">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Minus Charity Contribution</div>
+                        <div class="result-value" id="charityDeduction">-</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label" style="font-size: 1rem;">🎉 Available for Living</div>
+                        <div class="result-value highlight" style="font-size: 1.8rem;" id="netLiving">-</div>
+                    </div>
+                </div>
+                <p style="color: #68d391; margin-top: 12px; text-align: center;">
+                    Monthly: <strong id="monthlyNet">-</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Register Service Worker for offline capability
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(() => {
+                    // Service worker registration failed - app still works online
+                });
+            });
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function calculateAll() {
+            const jackpot = parseFloat(document.getElementById('jackpotAmount').value);
+            
+            if (!jackpot || jackpot <= 0) {
+                alert('Please enter a valid jackpot amount');
+                return;
+            }
+
+            // After-tax calculation (multiply by 0.2276)
+            const netAfterTax = jackpot * 0.2276;
+            const lumpSum = jackpot * 0.6;
+            const taxAmount = lumpSum * 0.37;
+            
+            // Safe withdrawal rate (3.5% to preserve principal and keep up with inflation)
+            const safeWithdrawalRate = 0.035;
+            const safeWithdrawal = netAfterTax * safeWithdrawalRate;
+            const monthlyLiving = safeWithdrawal / 12;
+            
+            // Expected annual growth at 7%
+            const expectedGrowth = netAfterTax * 0.07;
+            
+            // Investment Allocations
+            const bondsAlloc = netAfterTax * 0.30;
+            const spAlloc = netAfterTax * 0.25;
+            const intlAlloc = netAfterTax * 0.15;
+            const reitAlloc = netAfterTax * 0.15;
+            const startupAlloc = netAfterTax * 0.10;
+            const cashAlloc = netAfterTax * 0.05;
+            
+            // Year 2 Charity (10% of safe withdrawal)
+            const charityAlloc = safeWithdrawal * 0.10;
+            const charityTaxDeduction = charityAlloc * 0.30;
+            
+            // Real Estate & Startups Detail
+            const realEstateDirect = reitAlloc * 0.6; // 60% direct real estate
+            const reitDetail = reitAlloc * 0.4; // 40% REITs
+            const angelInvest = startupAlloc * 0.5; // 50% angel investing
+            const vcFunds = startupAlloc * 0.5; // 50% VC funds
+            
+            // Insurance Costs (62yo male, NC - estimated annual premiums)
+            const healthIns = 18000; // Best health insurance
+            const travelIns = 5000; // Premium global travel insurance
+            const autoIns = 4000; // Full coverage luxury auto
+            const umbrellaIns = 1500; // $5M umbrella liability
+            const totalIns = healthIns + travelIns + autoIns + umbrellaIns;
+            
+            // Professional Services (estimated annual costs)
+            const legalFee = 15000; // Estate planning attorney
+            const cpaFee = 10000; // CPA/tax accountant
+            const advisorFee = netAfterTax * 0.005; // Fee-only advisor 0.5% AUM
+            const trustFee = 8000; // Trust administration
+            const cyberFee = 3000; // Cybersecurity protection
+            const miscFee = 5000; // Miscellaneous
+            const totalProfessional = legalFee + cpaFee + advisorFee + trustFee + cyberFee + miscFee;
+            
+            // All expenses total
+            const charityYear2 = safeWithdrawal * 0.10; // 10% to charity from withdrawal
+            const totalAllExpenses = totalIns + totalProfessional + charityYear2;
+            
+            // Net living amount
+            const netLiving = safeWithdrawal - totalAllExpenses;
+            const monthlyNet = netLiving / 12;
+            
+            // Update DOM
+            document.getElementById('results').style.display = 'block';
+            
+            // Gross and Net
+            document.getElementById('grossAmount').textContent = formatCurrency(jackpot);
+            document.getElementById('netAmount').textContent = formatCurrency(netAfterTax);
+            document.getElementById('lumpSum').textContent = formatCurrency(lumpSum);
+            document.getElementById('taxAmount').textContent = formatCurrency(taxAmount);
+            
+            // Safe withdrawal
+            document.getElementById('investableAmount').textContent = formatCurrency(netAfterTax);
+            document.getElementById('safeWithdrawal').textContent = formatCurrency(safeWithdrawal);
+            document.getElementById('monthlyLiving').textContent = formatCurrency(monthlyLiving);
+            document.getElementById('annualGrowth').textContent = formatCurrency(expectedGrowth);
+            
+            // Investment Allocations
+            document.getElementById('bondsAlloc').textContent = formatCurrency(bondsAlloc);
+            document.getElementById('spAlloc').textContent = formatCurrency(spAlloc);
+            document.getElementById('intlAlloc').textContent = formatCurrency(intlAlloc);
+            document.getElementById('reitAlloc').textContent = formatCurrency(reitAlloc);
+            document.getElementById('startupAlloc').textContent = formatCurrency(startupAlloc);
+            document.getElementById('cashAlloc').textContent = formatCurrency(cashAlloc);
+            
+            // Charity
+            document.getElementById('charityAlloc').textContent = formatCurrency(charityAlloc);
+            document.getElementById('charityTaxDeduction').textContent = formatCurrency(charityTaxDeduction);
+            
+            // Real Estate & Startups
+            document.getElementById('realEstateDirect').textContent = formatCurrency(realEstateDirect);
+            document.getElementById('reitDetail').textContent = formatCurrency(reitDetail);
+            document.getElementById('angelInvest').textContent = formatCurrency(angelInvest);
+            document.getElementById('vcFunds').textContent = formatCurrency(vcFunds);
+            
+            // Insurance
+            document.getElementById('healthIns').textContent = formatCurrency(healthIns);
+            document.getElementById('travelIns').textContent = formatCurrency(travelIns);
+            document.getElementById('autoIns').textContent = formatCurrency(autoIns);
+            document.getElementById('umbrellaIns').textContent = formatCurrency(umbrellaIns);
+            document.getElementById('totalIns').textContent = formatCurrency(totalIns);
+            
+            // Professional
+            document.getElementById('legalFee').textContent = formatCurrency(legalFee);
+            document.getElementById('cpaFee').textContent = formatCurrency(cpaFee);
+            document.getElementById('advisorFee').textContent = formatCurrency(advisorFee);
+            document.getElementById('trustFee').textContent = formatCurrency(trustFee);
+            document.getElementById('cyberFee').textContent = formatCurrency(cyberFee);
+            document.getElementById('miscFee').textContent = formatCurrency(miscFee);
+            document.getElementById('totalProfessional').textContent = formatCurrency(totalProfessional);
+            
+            // Final living
+            document.getElementById('finalWithdrawal').textContent = formatCurrency(safeWithdrawal);
+            document.getElementById('totalAllExpenses').textContent = formatCurrency(totalAllExpenses);
+            document.getElementById('charityDeduction').textContent = formatCurrency(charityYear2);
+            document.getElementById('netLiving').textContent = formatCurrency(netLiving);
+            document.getElementById('monthlyNet').textContent = formatCurrency(monthlyNet);
+            
+            // Scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Auto-calculate on page load
+        window.addEventListener('load', () => {
+            calculateAll();
+        });
+    </script>
+</body>
+</html>
